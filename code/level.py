@@ -3,6 +3,7 @@ from settings import *
 from player import Player
 from overlay import Overlay
 from sprites import Generic
+from pytmx.util_pygame import load_pygame
 
 class Level:
 
@@ -16,6 +17,18 @@ class Level:
         self.overlay = Overlay(self.player)
 
     def setup(self):
+        tmx_data = load_pygame('../data/map.tmx')
+
+        # house
+        for layer in ['HouseFloor', 'HouseFurnitureBottom']:
+            for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
+                Generic((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites, LAYERS['house bottom'])
+
+        for layer in ['HouseWalls', 'HouseFurnitureTop']:
+            for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
+                Generic((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites, LAYERS['main'])
+
+
         self.player = Player((640, 360), self.all_sprites)
         Generic(pos=(0, 0),
                 surf=pygame.image.load('../graphics/world/ground.png').convert_alpha(),
