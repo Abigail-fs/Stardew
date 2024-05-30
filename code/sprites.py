@@ -13,6 +13,11 @@ class Generic(pygame.sprite.Sprite):
         self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.2, -self.rect.height * 0.75)
 
 
+class Interaction(Generic):
+    def __init__(self, pos, size, groups, name):
+        surf = pygame.Surface(size)
+        super().__init__(pos, surf, groups)
+        self.name = name
 class Water(Generic):
     def __init__(self, pos, frames, groups):
 
@@ -82,7 +87,7 @@ class Tree(Generic):
         # damaging the tree
         self.health -= 1
         # """ this is so fucking stupid why is delta time like this """
-        # print(" - hp")
+        print(" - hp")
         # remove an apple
         if len(self.apple_sprites.sprites()) > 0:
             # """ what the fuck why does a print statement make the code run """
@@ -112,7 +117,7 @@ class Tree(Generic):
 
         for pos in self.apple_pos:
             if randint(0, 10) < 2:
-                # print('apple made') # DO NOT REMOVE THIS PRINT STATEMENT
+                print('apple made') # DO NOT REMOVE THIS PRINT STATEMENT
                                     # no idea why but if you do it will fuck the apples up
                 x = pos[0] + self.rect.left
                 y = pos[1] + self.rect.top
