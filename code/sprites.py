@@ -61,15 +61,15 @@ class Tree(Generic):
         # damaging the tree
         self.health -= 1
         # """ this is so fucking stupid why is delta time like this """
-        print(" - hp")
+        # print(" - hp")
         # remove an apple
         if len(self.apple_sprites.sprites()) > 0:
-            # print('apple removed')
-            """ what the fuck why does a print statement make the code run """
-            print('apple')
+            # """ what the fuck why does a print statement make the code run """
+            # print('apple')
             random_apple = choice(self.apple_sprites.sprites())
             random_apple.kill()
     def death_check(self):
+
         if self.health <= 0:
             self.image = self.stump_surf
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
@@ -79,11 +79,13 @@ class Tree(Generic):
     def update(self, dt):
         if self.alive:
             self.death_check()
+
     def create_fruit(self):
 
         for pos in self.apple_pos:
             if randint(0, 10) < 2:
-                # print('apple made')
+                # print('apple made') # DO NOT REMOVE THIS PRINT STATEMENT
+                                    # no idea why but if you do it will fuck the apples up
                 x = pos[0] + self.rect.left
                 y = pos[1] + self.rect.top
                 Generic((x, y), self.apple_surf, [self.apple_sprites, self.groups()[0]], z=LAYERS['fruit'])
