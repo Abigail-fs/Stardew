@@ -123,5 +123,5 @@ class Tree(Generic):
 				Generic(
 					pos=(x, y),
 					surf=self.apple_surf,
-					groups = [self.apple_sprites,self.groups()[0]],
+					groups = (self.apple_sprites,self.groups()[0]),
 					z=LAYERS['fruit'])

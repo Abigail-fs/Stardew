@@ -40,7 +40,7 @@ class Level:
 
 		# Fence
 		for x, y, surf in tmx_data.get_layer_by_name('Fence').tiles():
-			Generic((x * TILE_SIZE,y * TILE_SIZE), surf, [self.all_sprites, self.collision_sprites])
+			Generic((x * TILE_SIZE,y * TILE_SIZE), surf, (self.all_sprites, self.collision_sprites))
 
 		# water 
 		water_frames = import_folder('../graphics/water')
@@ -52,13 +52,13 @@ class Level:
 			Tree(
 				pos = (obj.x, obj.y), 
 				surf = obj.image, 
-				groups = [self.all_sprites, self.collision_sprites, self.tree_sprites], 
+				groups = (self.all_sprites, self.collision_sprites, self.tree_sprites),
 				name = obj.name,
 				player_add = self.player_add)
 
 		# wildflowers 
 		for obj in tmx_data.get_layer_by_name('Decoration'):
-			WildFlower((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites])
+			WildFlower((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
 
 		# collion tiles
 		for x, y, surf in tmx_data.get_layer_by_name('Collision').tiles():

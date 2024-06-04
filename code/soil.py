@@ -78,7 +78,7 @@ class SoilLayer:
                 pos = soil_sprite.rect.topleft
 
                 water_surface_list = import_folder('../graphics/soil_water')
-                WaterTile(pos, random.choice(water_surface_list), [self.all_sprites, self.water_sprites])
+                WaterTile(pos, random.choice(water_surface_list), (self.all_sprites, self.water_sprites))
 
     def remove_water(self):
         # destroy all water
@@ -151,4 +151,4 @@ class SoilLayer:
 
                     SoilTile((index_col * TILE_SIZE, index_row * TILE_SIZE),
                              self.soil_surfs[tile_type],
-                             [self.all_sprites, self.soil_sprites])
+                             (self.all_sprites, self.soil_sprites))
