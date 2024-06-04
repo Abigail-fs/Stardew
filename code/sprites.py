@@ -106,12 +106,12 @@ class Tree(Generic):
 		if self.health <= 0:
 			Particle(self.rect.topleft, self.image, self.groups()[0], LAYERS['fruit'], 300)
 			self.image = self.stump_surf
-			self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
-			self.hitbox = self.rect.copy().inflate(-10,-self.rect.height * 0.6)
+			self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
+			self.hitbox = self.rect.copy().inflate(-10, -self.rect.height * 0.6)
 			self.alive = False
 			self.player_add('wood')
 
-	def update(self,dt):
+	def update(self, dt):
 		if self.alive:
 			self.check_death()
 

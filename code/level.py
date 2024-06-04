@@ -85,7 +85,7 @@ class Level:
 			groups = self.all_sprites,
 			z=LAYERS['ground'])
 
-	def player_add(self,item):
+	def player_add(self, item):
 
 		self.player.item_inventory[item] += 1
 
@@ -97,8 +97,10 @@ class Level:
 				apple.kill()
 			if tree.alive:
 				tree.create_fruit()
+		# soil
+		self.soil_layer.remove_water()
 
-	def run(self,dt):
+	def run(self, dt):
 		self.display_surface.fill('black')
 		self.all_sprites.custom_draw(self.player)
 		self.all_sprites.update(dt)
