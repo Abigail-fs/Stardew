@@ -32,6 +32,7 @@ class SoilLayer:
         # graphics
         self.soil_surf = pygame.image.load('../graphics/soil/o.png')
         self.soil_surfs = import_folder_dict('../graphics/soil')
+        self.water_surface_list = import_folder('../graphics/soil_water')
 
         self.create_soil_grid()
         self.create_hit_rect()
@@ -66,6 +67,8 @@ class SoilLayer:
                 if 'F' in self.grid[y][x]:
                     self.grid[y][x].append('X')
                     self.create_soil_tiles()
+                    if self.raining:
+                        self.water_all()
 
     def water(self, target_pos):
         for soil_sprite in self.soil_sprites.sprites():
@@ -77,9 +80,18 @@ class SoilLayer:
                 self.grid[y][x].append('W')
                 pos = soil_sprite.rect.topleft
 
-                water_surface_list = import_folder('../graphics/soil_water')
-                WaterTile(pos, random.choice(water_surface_list), (self.all_sprites, self.water_sprites))
 
+                surf = random.choice(self.water_surface_list)
+                WaterTile(pos, surf, (self.all_sprites, self.water_sprites))
+
+    def water_all(self):
+        for index_row, row in enumerate(self.grid):
+            for index_col, cell in enumerate(row):
+                if 'X' in cell and 'W' not in cell:
+                    cell.append('W')
+                    x = index_col * TILE_SIZE
+                    y = index_row * TILE_SIZE
+                    WaterTile((x, y), random.choice(self.water_surface_list), (self.all_sprites, self.water_sprites))
     def remove_water(self):
         # destroy all water
         for sprite in self.water_sprites.sprites():

@@ -29,8 +29,8 @@ class Water(Generic):
 
 		# sprite setup
 		super().__init__(
-				pos = pos, 
-				surf = self.frames[self.frame_index], 
+				pos = pos,
+				surf = self.frames[self.frame_index],
 				groups = groups, 
 				z = LAYERS['water']) 
 
@@ -123,5 +123,5 @@ class Tree(Generic):
 				Generic(
 					pos=(x, y),
 					surf=self.apple_surf,
-					groups = (self.apple_sprites,self.groups()[0]),
+					groups = (self.apple_sprites, self.groups()[0]),
 					z=LAYERS['fruit'])
