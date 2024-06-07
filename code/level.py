@@ -1,6 +1,4 @@
-import random
-
-import pygame
+import pygame 
 from settings import *
 from player import Player
 from overlay import Overlay
@@ -10,6 +8,7 @@ from support import *
 from transition import Transition
 from soil import SoilLayer
 from sky import Rain, Sky
+from random import randint
 from menu import Menu
 
 class Level:
@@ -31,7 +30,7 @@ class Level:
 
 		# sky
 		self.rain = Rain(self.all_sprites)
-		self.raining = random.randint(0, 10) > 3
+		self.raining = randint(0,10) > 7
 		self.soil_layer.raining = self.raining
 		self.sky = Sky()
 
@@ -39,21 +38,28 @@ class Level:
 		self.menu = Menu(self.player, self.toggle_shop)
 		self.shop_active = False
 
+		# music
+		self.success = pygame.mixer.Sound('../audio/success.wav')
+		self.success.set_volume(0.3)
+		self.music = pygame.mixer.Sound('../audio/music.mp3')
+		self.music.set_volume(0.1)
+		self.music.play(loops = -1)
+
 	def setup(self):
 		tmx_data = load_pygame('../data/map.tmx')
 
 		# house 
 		for layer in ['HouseFloor', 'HouseFurnitureBottom']:
 			for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
-				Generic((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites, LAYERS['house bottom'])
+				Generic((x * TILE_SIZE,y * TILE_SIZE), surf, self.all_sprites, LAYERS['house bottom'])
 
 		for layer in ['HouseWalls', 'HouseFurnitureTop']:
 			for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
-				Generic((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
+				Generic((x * TILE_SIZE,y * TILE_SIZE), surf, self.all_sprites)
 
 		# Fence
 		for x, y, surf in tmx_data.get_layer_by_name('Fence').tiles():
-			Generic((x * TILE_SIZE, y * TILE_SIZE), surf, (self.all_sprites, self.collision_sprites))
+			Generic((x * TILE_SIZE,y * TILE_SIZE), surf, [self.all_sprites, self.collision_sprites])
 
 		# water 
 		water_frames = import_folder('../graphics/water')
@@ -65,13 +71,13 @@ class Level:
 			Tree(
 				pos = (obj.x, obj.y), 
 				surf = obj.image, 
-				groups = (self.all_sprites, self.collision_sprites, self.tree_sprites),
+				groups = [self.all_sprites, self.collision_sprites, self.tree_sprites], 
 				name = obj.name,
 				player_add = self.player_add)
 
 		# wildflowers 
 		for obj in tmx_data.get_layer_by_name('Decoration'):
-			WildFlower((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+			WildFlower((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites])
 
 		# collion tiles
 		for x, y, surf in tmx_data.get_layer_by_name('Collision').tiles():
@@ -84,51 +90,52 @@ class Level:
 					pos = (obj.x,obj.y), 
 					group = self.all_sprites, 
 					collision_sprites = self.collision_sprites,
-					tree_sprites=self.tree_sprites,
-					interaction=self.interaction_sprites,
-					soil_layer=self.soil_layer,
+					tree_sprites = self.tree_sprites,
+					interaction = self.interaction_sprites,
+					soil_layer = self.soil_layer,
 					toggle_shop = self.toggle_shop)
 			
 			if obj.name == 'Bed':
-				Interaction((obj.x, obj.y), (obj.width, obj.height), self.interaction_sprites, obj.name)
+				Interaction((obj.x,obj.y), (obj.width,obj.height), self.interaction_sprites, obj.name)
 
 			if obj.name == 'Trader':
-				Interaction((obj.x, obj.y), (obj.width, obj.height), self.interaction_sprites, obj.name)
+				Interaction((obj.x,obj.y), (obj.width,obj.height), self.interaction_sprites, obj.name)
 
 
 		Generic(
-			pos=(0, 0),
-			surf=pygame.image.load('../graphics/world/ground.png').convert_alpha(),
+			pos = (0,0),
+			surf = pygame.image.load('../graphics/world/ground.png').convert_alpha(),
 			groups = self.all_sprites,
-			z=LAYERS['ground'])
+			z = LAYERS['ground'])
 
-	def player_add(self, item):
+	def player_add(self,item):
 
 		self.player.item_inventory[item] += 1
+		self.success.play()
 
 	def toggle_shop(self):
+
 		self.shop_active = not self.shop_active
 
 	def reset(self):
 		# plants
 		self.soil_layer.update_plants()
 
+		# soil
+		self.soil_layer.remove_water()
+		self.raining = randint(0,10) > 7
+		self.soil_layer.raining = self.raining
+		if self.raining:
+			self.soil_layer.water_all()
 
 		# apples on the trees
 		for tree in self.tree_sprites.sprites():
 			for apple in tree.apple_sprites.sprites():
 				apple.kill()
-			if tree.alive:
-				tree.create_fruit()
+			tree.create_fruit()
+
 		# sky
-		self.sky.start_color = [255, 255, 255]
-		# soil
-		self.soil_layer.remove_water()
-		self.raining = random.randint(0, 10) > 3
-		# randomize the rain
-		self.soil_layer.raining = self.raining
-		if self.raining:
-			self.soil_layer.water_all()
+		self.sky.start_color = [255,255,255]
 
 	def plant_collision(self):
 		if self.soil_layer.plant_sprites:
@@ -136,17 +143,15 @@ class Level:
 				if plant.harvestable and plant.rect.colliderect(self.player.hitbox):
 					self.player_add(plant.plant_type)
 					plant.kill()
-					Particle(plant.rect.topleft, plant.image, self.all_sprites, z=LAYERS['main'])
-					row = plant.rect.centery // TILE_SIZE
-					col = plant.rect.centerx // TILE_SIZE
-					self.soil_layer.grid[row][col].remove('P')
+					Particle(plant.rect.topleft, plant.image, self.all_sprites, z = LAYERS['main'])
+					self.soil_layer.grid[plant.rect.centery // TILE_SIZE][plant.rect.centerx // TILE_SIZE].remove('P')
 
-	def run(self, dt):
-
+	def run(self,dt):
+		
 		# drawing logic
 		self.display_surface.fill('black')
 		self.all_sprites.custom_draw(self.player)
-
+		
 		# updates
 		if self.shop_active:
 			self.menu.update()
@@ -156,14 +161,11 @@ class Level:
 
 		# weather
 		self.overlay.display()
-
-		# rain
 		if self.raining and not self.shop_active:
 			self.rain.update()
-
-		# daytime
 		self.sky.display(dt)
-		# transition
+
+		# transition overlay
 		if self.player.sleep:
 			self.transition.play()
 
