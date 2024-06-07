@@ -41,10 +41,13 @@ class Level:
 		# music
 		self.success = pygame.mixer.Sound('../audio/success.wav')
 		self.success.set_volume(0.3)
-		self.music = pygame.mixer.Sound('../audio/music.mp3')
+		self.music = pygame.mixer.Sound('../audio/music(spring).mp3')
 		self.music.set_volume(0.1)
 		self.music.play(loops = -1)
-
+		self.rain_sound = pygame.mixer.Sound('../audio/rain.wav')
+		self.rain_sound.set_volume(0.1)
+		self.harvest_sound = pygame.mixer.Sound('../audio/harvest.wav')
+		self.harvest_sound.set_volume(0.2)
 	def setup(self):
 		tmx_data = load_pygame('../data/map.tmx')
 
@@ -111,7 +114,11 @@ class Level:
 	def player_add(self,item):
 
 		self.player.item_inventory[item] += 1
-		self.success.play()
+		if item != 'corn' and item != 'tomato':
+			self.success.play()
+		else:
+			self.harvest_sound.play()
+
 
 	def toggle_shop(self):
 
@@ -127,7 +134,9 @@ class Level:
 		self.soil_layer.raining = self.raining
 		if self.raining:
 			self.soil_layer.water_all()
-
+			self.rain_sound.play(loops = -1)
+		elif not self.raining:
+			self.rain_sound.stop()
 		# apples on the trees
 		for tree in self.tree_sprites.sprites():
 			for apple in tree.apple_sprites.sprites():
