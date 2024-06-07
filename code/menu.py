@@ -27,7 +27,7 @@ class Menu:
 
     def display_money(self):
         text_surf = self.font.render(f'${self.player.money}', False, 'Black')
-        text_rect = text_surf.get_rect(midbottom = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 20))
+        text_rect = text_surf.get_rect(midbottom=(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 20))
 
         pygame.draw.rect(self.display_surface, 'White', text_rect.inflate(10, 10), 0, 6)
         self.display_surface.blit(text_surf, text_rect)
@@ -61,6 +61,32 @@ class Menu:
             if keys[pygame.K_DOWN]:
                 self.index += 1
                 self.timer.activate()
+
+            if keys[pygame.K_SPACE]:
+                self.timer.activate()
+
+                # get item
+                if self.index < 0:
+                    self.index = len(self.options) - 1
+                if self.index > len(self.options) - 1:
+                    self.index = 0
+
+                current_item = self.options[self.index]
+                print(current_item)
+
+                # sell
+                if self.index <= self.sell_border:
+                    if self.player.item_inventory[current_item] > 0:
+                        self.player.item_inventory[current_item] -= 1
+                        self.player.money += SALE_PRICES[current_item]
+                else:
+                    # buy
+                    seed_price = PURCHASE_PRICES[current_item]
+                    if self.player.money >= seed_price:
+                        self.player.seed_inventory[current_item] += 1
+                        self.player.money -= seed_price
+
+
         # clamp the values
         if self.index < 0:
             self.index = len(self.options) - 1
