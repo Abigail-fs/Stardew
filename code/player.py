@@ -64,8 +64,8 @@ class Player(pygame.sprite.Sprite):
 		self.toggle_shop = toggle_shop
 
 		# sound
-		self.watering = pygame.mixer.Sound('../audio/water.mp3')
-		self.watering.set_volume(0.2)
+		self.watering = pygame.mixer.Sound('../audio/water_lap1.wav')
+		self.watering.set_volume(0.5)
 
 	def use_tool(self):
 		if self.selected_tool == 'hoe':

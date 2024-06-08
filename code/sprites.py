@@ -87,7 +87,7 @@ class Tree(Generic):
 		
 		# damaging the tree
 		self.health -= 1
-
+		print('- hp')
 		# play sound
 		self.axe_sound.play()
 
